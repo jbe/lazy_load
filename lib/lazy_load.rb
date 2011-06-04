@@ -1,12 +1,18 @@
 
-# Defer loading (or another required task) until a
-# constant is requested. Optionally show helpful
-# message when dependencies are not met.
-#
+
+
 module LazyLoad
+
+  VERSION = '0.0.1'
 
   class Error < StandardError;    end
   class DependencyError < Error;  end
+
+  def self.new_scope(&blk)
+    mod = self.dup.reset
+    mod.module_eval(&blk)
+    mod
+  end
 
   @@messages = {}
   @@actions  = {}
@@ -17,9 +23,15 @@ module LazyLoad
       ArgumentError, "missing require path or callback")
   end
 
-  def unmap(name)
+  def self.unmap(name)
     @@messages.delete(name)
     @@actions.delete(name)
+  end
+
+  def reset!
+    @@messages.clear
+    @@actions.clear
+    self
   end
 
   def self.const_missing(name)
@@ -45,7 +57,7 @@ module LazyLoad
   # Return the first available dependency from the
   # list of constant names.
   #
-  def first_available(*names)
+  def self.first_available(*names)
     names.each do |name|
       begin
         return; self.const_get(name)

@@ -2,6 +2,8 @@ require File.join(File.dirname(__FILE__), 'helper')
 
 class LazyLoadTest < TestCase
 
+  # basic
+
   def map(*args)
     LazyLoad.map(*args)
     yield
@@ -19,8 +21,21 @@ class LazyLoadTest < TestCase
   test 'callback'
   test 'callback with dependency error'
 
+
+  # first_available
+
   test 'returns first when first available is first'
   test 'returns third when first available is third'
   test 'fails with first message when none available'
 
+
+  # new_scope
+
+  test 'scope unaffected by parent'
+  test 'parent unaffected by scope'
+  test 'scope unaffected by other scope'
+
 end
+
+
+
