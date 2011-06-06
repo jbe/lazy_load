@@ -54,16 +54,39 @@ Unlike autoload, LazyLoad is scoped, and it does therefore not pollute or monkey
 Notice how, when a block is used, it must return the constant. The help message is optional. LazyLoad has no mappings by default.
 
 
+### Errors
+
+Referencing constant beneath `LazyLoad` for which there is no mapping, resuslts in the usual `NameError`. Referencing an unavailable constant typically gives a `LazyLoad::DependencyError`, which conveniently is also a subclass of NameError.
+
+
 ### Best available
 
-TODO
+You can use the `best` method to return the first available given a list of constant names, or else raise a `LazyLoad::DependencyError` for the first (most preferred) one.
+
+```ruby
+    LazyLoad.best(:Kramdown, :RDiscount, :Redcarpet)
+
+```
 
 
 ### Scopes
 
-TODO
+Use the `scope` method if you need more than one scope (typically for gem interoperability).
 
+```ruby
+  module SomeProject
+    Lazy = LazyLoad.scope do
+      map(:StringIO, 'stringio')
+    end
+    
+    Lazy.map(:Tilt, 'tilt')
+  
+    Lazy::StringIO # => StringIO
+    Lazy::Tilt # => Tilt
+  end
+```
 
+Feedback and suggestions are welcome through Github.
 
 ---
 
