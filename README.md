@@ -56,7 +56,7 @@ Notice how, when a block is used, it must return the constant. The help message 
 
 ### Errors
 
-Referencing constant beneath `LazyLoad` for which there is no mapping, resuslts in the usual `NameError`. Referencing an unavailable constant typically gives a `LazyLoad::DependencyError`, which conveniently is also a subclass of `NameError`.
+Referencing a constant beneath `LazyLoad` for which there is no mapping resuslts in the usual `NameError`. Referencing an unavailable constant typically gives a `LazyLoad::DependencyError`, which conveniently is also a subclass of `NameError`.
 
 
 ### Best available
