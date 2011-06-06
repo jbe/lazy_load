@@ -56,12 +56,12 @@ Notice how, when a block is used, it must return the constant. The help message 
 
 ### Errors
 
-Referencing constant beneath `LazyLoad` for which there is no mapping, resuslts in the usual `NameError`. Referencing an unavailable constant typically gives a `LazyLoad::DependencyError`, which conveniently is also a subclass of NameError.
+Referencing constant beneath `LazyLoad` for which there is no mapping, resuslts in the usual `NameError`. Referencing an unavailable constant typically gives a `LazyLoad::DependencyError`, which conveniently is also a subclass of `NameError`.
 
 
 ### Best available
 
-You can use the `best` method to return the first available given a list of constant names, or else raise a `LazyLoad::DependencyError` for the first (most preferred) one.
+You can use the `best` method to return the first constant from a list of names, or else raise a `LazyLoad::DependencyError` for the first (most preferred) one.
 
 ```ruby
     LazyLoad.best(:Kramdown, :RDiscount, :Redcarpet)
