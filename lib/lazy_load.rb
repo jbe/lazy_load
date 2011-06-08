@@ -27,6 +27,8 @@ module LazyLoad
         ArgumentError, "missing require path or callback")
     end
 
+    alias :dep :map
+
     def unmap(name)
       @messages.delete(name)
       @actions.delete(name)
