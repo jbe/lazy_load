@@ -12,6 +12,7 @@ class LazyLoadTest < TestCase
     LazyLoad.map(:Unavailable) do
       raise LazyLoad::DependencyError, 'not available'
     end
+    LazyLoad.group(:test_grp, :Bogus, :Unavailable, :Message)
     yield
     LazyLoad.reset!
   end
@@ -94,6 +95,12 @@ class LazyLoadTest < TestCase
       assert_raises(LazyLoad::DependencyError) do
         scope::StringIO
       end
+    end
+  end
+
+  test 'groups' do
+    with_mappings do
+      assert_equal 'love', LazyLoad[:test_grp]
     end
   end
   

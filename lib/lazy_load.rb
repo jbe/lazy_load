@@ -12,6 +12,7 @@ module LazyLoad
     def reset!
       @messages = {}
       @actions  = {}
+      @groups   = {}
       self
     end
 
@@ -25,6 +26,10 @@ module LazyLoad
       @messages[name] = msg
       @actions[name]  = blk || action || raise(
         ArgumentError, "missing require path or callback")
+    end
+
+    def group(name, *constants)
+      @groups[name] = constants
     end
 
     alias :dep :map
@@ -58,7 +63,7 @@ module LazyLoad
     # list of constant names.
     #
     def best(*names)
-      names.each do |name|
+      expand_groups(names).each do |name|
         begin
           return const_get(name)
         rescue NameError; end
@@ -66,6 +71,13 @@ module LazyLoad
       const_get(names.first)
     end
     alias :first_available :best
+    alias :[] :best
+
+    def expand_groups(names)
+      names.map do |name|
+        @groups[name] || name
+      end.flatten
+    end
 
   end
 
