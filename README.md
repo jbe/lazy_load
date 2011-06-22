@@ -64,7 +64,17 @@ Referencing a constant beneath `LazyLoad` for which there is no mapping resuslts
 You can use the `best` method to return the first constant from a list of names, or else raise a `LazyLoad::DependencyError` for the first (most preferred) one.
 
 ```ruby
+
     LazyLoad.best(:Kramdown, :RDiscount, :Redcarpet)
+
+```
+
+You can define named groups, to simplyfy this, if you are doing it many times:
+
+```ruby
+
+    LazyLoad.group(:markdown, :Kramdown, :RDiscount, :Redcarpet)
+    LazyLoad.best(:markdown)
 
 ```
 
