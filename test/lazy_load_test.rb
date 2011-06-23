@@ -6,15 +6,28 @@ class LazyLoadTest < TestCase
   # helpers:
 
   def with_mappings(*args)
-    LazyLoad.map(:StringIO, 'stringio', 'stringio not in stdlib?')
-    LazyLoad.map(:Bogus, 'thishastobebogusnow', 'bogus lib not found')
-    LazyLoad.map(:Message) { 'love' }
-    LazyLoad.map(:Unavailable) do
-      raise LazyLoad::DependencyError, 'not available'
+
+    mappings = Proc.new do
+      const(:StringIO, 'stringio')
+      const(:Bogus, 'thishastobebogusnow')
+      const(:Message) { 'love' }
+      const(:Boat) { 'sank' }
+      const(:Unavailable) { raise LoadError, 'not available' }
+      group(:test_grp, :Bogus, :Unavailable, :Message)
+      wrap(:Boat) { def actually; 'floats'; end }
     end
-    LazyLoad.group(:test_grp, :Bogus, :Unavailable, :Message)
-    yield
+
+    LazyLoad.module_eval(&mappings)
+    yield(LazyLoad)
     LazyLoad.reset!
+
+    yield LazyLoad.scope(&mappings)
+
+    mod = Module.new
+    mod.extend(LazyLoad::Mixin)
+    mod.module_eval(&mappings)
+    yield mod
+
   end
 
 
@@ -27,29 +40,29 @@ class LazyLoadTest < TestCase
   end
 
   test 'requires existing' do
-    with_mappings do
-      assert LazyLoad::StringIO == StringIO
+    with_mappings do |ll|
+      assert ll::StringIO == StringIO
     end
   end
 
   test 'require fails with message when unavailable' do
-    with_mappings do
-      assert_raises(LazyLoad::DependencyError) do
-        LazyLoad::Bogus
+    with_mappings do |ll|
+      assert_raises(LoadError) do
+        ll::Bogus
       end
     end
   end
 
   test 'callback' do
-    with_mappings do
-      assert LazyLoad::Message == "love"
+    with_mappings do |ll|
+      assert ll::Message == "love"
     end
   end
 
   test 'callback with dependency error' do
-    with_mappings do
-      assert_raises(LazyLoad::DependencyError) do
-        LazyLoad::Unavailable
+    with_mappings do |ll|
+      assert_raises(LoadError) do
+        ll::Unavailable
       end
     end
   end
@@ -58,27 +71,30 @@ class LazyLoadTest < TestCase
   # first_available
 
   test 'returns first when first available is first' do
-    with_mappings do
+    with_mappings do |ll|
       assert_equal(
         'love',
-        LazyLoad.best(:Message, :StringIO, :Unavailable)
+        ll.best(:Message, :StringIO, :Unavailable)
         )
     end
   end
 
   test 'returns third when first available is third' do
-    with_mappings do
+    with_mappings do |ll|
       assert_equal(
         'StringIO',
-        LazyLoad.best(:Bogus, :Unavailable, :StringIO, :Message).name
+        ll.best(:Bogus, :Unavailable, :StringIO, :Message).name
         )
     end
   end
   
   test 'fails with first message when none available' do
-    with_mappings do
-      assert_raises LazyLoad::DependencyError do
-        LazyLoad.best(:Bogus, :Unavailable, :Bogus)
+    with_mappings do |ll|
+      assert_raises LoadError do
+        ll.best(:Bogus, :Air, :Unavailable, :Bogus)
+      end
+      assert_raises NameError do
+        ll.best(:Air, :Bogus, :Unavailable, :Bogus)
       end
     end
   end
@@ -87,20 +103,25 @@ class LazyLoadTest < TestCase
   # new_scope
 
   test 'scope independent of source' do
-    with_mappings do
-      scope = LazyLoad.scope
-      scope.map(:StringIO, 'not_anymore')
+    with_mappings do |ll|
+      scope = ll.scope
+      scope.const(:StringIO, 'not_anymore')
 
-      assert_equal('StringIO', LazyLoad::StringIO.name)
-      assert_raises(LazyLoad::DependencyError) do
-        scope::StringIO
-      end
+      assert_equal('StringIO', ll::StringIO.name)
+      assert_raises(LoadError) { scope::StringIO }
     end
   end
 
   test 'groups' do
-    with_mappings do
-      assert_equal 'love', LazyLoad[:test_grp]
+    with_mappings do |ll|
+      assert_equal 'love', ll[:test_grp]
+    end
+  end
+
+  test 'wrapper' do
+    with_mappings do |ll|
+      assert_equal 'sank',   ll::Boat.wrapped
+      assert_equal 'floats', ll::Boat.actually
     end
   end
   

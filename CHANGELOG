@@ -1,7 +1,11 @@
 
 HEAD
-
-
+  deprecate custom msgs and errors
+  let LoadErrors pass
+  deprecate #map
+  alias #dep to #const
+  LazyLoad::Mixin
+  wrapper support
 
 0.0.3
   alias #map to #dep
