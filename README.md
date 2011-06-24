@@ -4,6 +4,8 @@ LazyLoad
 
 **Autoload with custom callbacks**
 
+Tested and working on: 1.8.7, 1.9.2, jruby 1.5.2, rubinius 1.0.1
+
 ---
 
 LazyLoad is a slightly more elaborate alternative to [autoload](http://ruby-doc.org/core/classes/Module.html#M000443). It helps deal with "soft" dependencies, where dependencies are "preferred", rather than strictly needed. It is very simple, but provides:
