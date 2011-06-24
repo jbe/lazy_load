@@ -95,6 +95,8 @@ module LazyLoad
 
   end
 
+  Wrapper = Mixin::Wrapper
+
   extend Mixin
 
 end
