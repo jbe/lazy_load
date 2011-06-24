@@ -33,6 +33,7 @@ module LazyLoad
     def group(name, *constants)
       @groups[name] = constants
     end
+    alias :prefer :group
 
     def unmap(name)
       @actions.delete(name)
@@ -98,6 +99,8 @@ module LazyLoad
   Wrapper = Mixin::Wrapper
 
   extend Mixin
+
+  def self.new(*prms) self.scope(*prms); end
 
 end
 

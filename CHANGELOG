@@ -1,5 +1,8 @@
 
 HEAD
+  various fixes
+
+0.1.1
   show install gem suggestion when used like autoload
 
 0.1.0
