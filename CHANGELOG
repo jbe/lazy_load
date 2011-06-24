@@ -1,6 +1,8 @@
 
 HEAD
-  various fixes
+
+0.1.2
+  various aliases, namespace fix
 
 0.1.1
   show install gem suggestion when used like autoload
