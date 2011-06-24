@@ -100,7 +100,7 @@ module LazyLoad
 
   extend Mixin
 
-  def self.new(*prms) self.scope(*prms); end
+  def self.new(*prms, &blk) self.scope(*prms, &blk); end
 
 end
 
