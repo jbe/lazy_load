@@ -43,7 +43,12 @@ module LazyLoad
         when Proc   then action.call
         when nil    then super
         when String
-          require @actions[name]
+          begin
+            require @actions[name]
+          rescue LoadError => boom
+            raise(LoadError, boom.message +
+              "\nPossible fix: gem install #{@actions[name]}")
+          end
           Kernel.const_get(name)
         else raise "Invalid action for dependency #{action.inspect}"
       end

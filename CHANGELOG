@@ -1,5 +1,6 @@
 
 HEAD
+  show install gem suggestion when used like autoload
 
 0.1.0
   deprecate custom msgs and errors
